@@ -9,7 +9,6 @@ Using Bento from Opscode: https://github.com/opscode/bento
 ## Vagrant plugins I use
 
 * vagrant-triggers
-* vagrant-cachier
 * vagrant-hostmanager
 
 

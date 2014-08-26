@@ -16,16 +16,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # https://github.com/emyl/vagrant-triggers
   if Vagrant.has_plugin?("vagrant-triggers")
     # Registering with RHN after the machine is up
-    config.trigger.after [:resume, :reload], :stdout => true do
+    config.trigger.after [:up, :resume, :reload], :stdout => true do
       info "Registering with Red Hat Network"
-      run_remote "sudo /usr/bin/subscription-manager register --username #{rhn_username} --password #{rhn_password} --auto-attach --force"
+      run_remote "sudo /vagrant/register.sh #{rhn_username} #{rhn_password}"
     end
-  end
-  
-  # https://github.com/fgrehm/vagrant-cachier
-  if Vagrant.has_plugin?("vagrant-cachier")
-    # Caching yum packages if possible
-    config.cache.scope = :box
   end
   
   # https://github.com/smdahlen/vagrant-hostmanager
@@ -38,10 +32,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   
   config.vm.define 'rhel65test' do |rhel|
-    rhel.vm.synced_folder ".", "/vagrant", type: "nfs"
+    #rhel.vm.synced_folder ".", "/vagrant", type: "nfs"
     rhel.vm.hostname = instance_hostname
     rhel.hostmanager.aliases = ["#{instance_hostname}.test.local"]
-    rhel.vm.provision "shell", inline: "/usr/bin/subscription-manager register --username #{rhn_username} --password #{rhn_password} --auto-attach --force"
+    rhel.vm.provision "shell", inline: "/vagrant/register.sh #{rhn_username} #{rhn_password}"
     rhel.vm.provision "shell", inline: "yum update yum -y"
     rhel.vm.provision "shell", inline: "yum update -y"
     
